@@ -1,8 +1,8 @@
 """
-a simple expression engine
+A simple expression engine
 Author: Yancey
 License: MIT Licence
-Website:
+Website: https://github.com/Yancey2023/ExpressionEngine
 """
 
 import math

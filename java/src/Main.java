@@ -1,3 +1,9 @@
+/**
+ * A simple expression engine
+ * Author: Yancey
+ * License: MIT Licence
+ * Website: https://github.com/Yancey2023/ExpressionEngine
+ */
 import yancey.expression.ast.Expression;
 
 import java.util.Map;
