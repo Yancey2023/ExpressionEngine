@@ -8,7 +8,7 @@ Website: https://github.com/Yancey2023/ExpressionEngine
 from expression import Expression
 
 
-def test(formula: str, variables: dict[str, float], answer: float):
+def test(formula: str, variables: dict[str, float], answer: float) -> None:
     calculate_result = Expression(formula).calculate(variables)
     if calculate_result != answer:
         print(f'test failed: {formula} = {calculate_result} != {answer}')
@@ -70,3 +70,4 @@ test('6*c*d/((a+3*c)*b)', {"a": 1.1, "b": 0.7, "c": 0.016, "d": 264.0}, 31.53807
 test('a*10*0.5', {"a": 1.0, "b": 0.5}, 5.0)
 test('5(10-b/2)', {"a": 1.0, "b": 0.5}, 48.75)
 test('0.5(5(10-b/2)*0.5-a*10*0.5)/(b/2)', {"a": 1.0, "b": 0.5}, 38.75)
+test('0.5ab*6.28*c/(60*2*0.4*100*(0.5+0.75))', {"a": 61.0, "b": 0.3, "c": 905.0}, 8.667185)

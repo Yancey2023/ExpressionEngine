@@ -136,8 +136,17 @@ class VariableNode(BaseNode):
             return result
         elif self._variable_name == 'e':
             return math.e
-        else:
-            raise f'unknown variable name: {self._variable_name}'
+        if len(self._variable_name) > 1:
+            result = 1
+            for inner_variable_name in self._variable_name:
+                result0 = variables.get(inner_variable_name, None)
+                if result0 is not None:
+                    result *= result0
+                elif inner_variable_name == 'e':
+                    result *= math.e
+            return result
+
+        raise f'unknown variable name: {self._variable_name}'
 
 
 class FunctionType(Enum):

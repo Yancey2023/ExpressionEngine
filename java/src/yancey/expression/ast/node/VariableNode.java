@@ -22,9 +22,21 @@ public class VariableNode extends BaseNode {
         Double result = variables.get(variableName);
         if (result != null) {
             return result;
-        }
-        if (Objects.equals(variableName, "e")) {
+        } else if (Objects.equals(variableName, "e")) {
             return Math.E;
+        }
+        if (variableName.length() > 1) {
+            result = 1.0;
+            for (char ch : variableName.toCharArray()) {
+                String variableName0 = String.valueOf(ch);
+                Double result0 = variables.get(variableName0);
+                if (result0 != null) {
+                    result *= result0;
+                } else if (Objects.equals(variableName0, "e")) {
+                    result *= Math.E;
+                }
+            }
+            return result;
         }
         throw new RuntimeException("unknown variable name: " + variableName);
     }
