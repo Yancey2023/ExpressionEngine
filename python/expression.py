@@ -144,7 +144,11 @@ class VariableNode(BaseNode):
                     result *= result0
                 elif inner_variable_name == 'e':
                     result *= math.e
-            return result
+                else:
+                    result = None
+                    break
+            if result is not None:
+                return result
 
         raise f'unknown variable name: {self._variable_name}'
 

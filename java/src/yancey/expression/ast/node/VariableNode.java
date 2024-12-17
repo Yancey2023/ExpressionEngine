@@ -34,9 +34,14 @@ public class VariableNode extends BaseNode {
                     result *= result0;
                 } else if (Objects.equals(variableName0, "e")) {
                     result *= Math.E;
+                } else {
+                    result = null;
+                    break;
                 }
             }
-            return result;
+            if (result != null) {
+                return result;
+            }
         }
         throw new RuntimeException("unknown variable name: " + variableName);
     }
