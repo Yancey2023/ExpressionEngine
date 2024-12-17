@@ -131,10 +131,10 @@ class VariableNode(BaseNode):
         self._variable_name = variable_name
 
     def calculate(self, variables: dict[str, float]) -> float:
-        result = variables[self._variable_name]
+        result = variables.get(self._variable_name, None)
         if result is not None:
             return result
-        elif result == 'e':
+        elif self._variable_name == 'e':
             return math.e
         else:
             raise f'unknown variable name: {self._variable_name}'
