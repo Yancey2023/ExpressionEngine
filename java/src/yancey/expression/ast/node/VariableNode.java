@@ -25,6 +25,8 @@ public class VariableNode extends BaseNode {
             return result;
         } else if (Objects.equals(variableName, "e")) {
             return Math.E;
+        } else if (Objects.equals(variableName, "pi")) {
+            return Math.PI;
         }
         if (variableName.length() > 1) {
             result = 1.0;
@@ -35,6 +37,8 @@ public class VariableNode extends BaseNode {
                     result *= result0;
                 } else if (Objects.equals(variableName0, "e")) {
                     result *= Math.E;
+                } else if (Objects.equals(variableName0, "pi")) {
+                    result *= Math.PI;
                 } else {
                     result = null;
                     break;

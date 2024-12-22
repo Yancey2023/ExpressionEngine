@@ -126,6 +126,8 @@ class VariableNode(BaseNode):
             return result
         elif self._variable_name == 'e':
             return math.e
+        elif self._variable_name == 'pi':
+            return math.pi
         if len(self._variable_name) > 1:
             result = 1
             for inner_variable_name in self._variable_name:
@@ -134,6 +136,8 @@ class VariableNode(BaseNode):
                     result *= result0
                 elif inner_variable_name == 'e':
                     result *= math.e
+                elif inner_variable_name == 'pi':
+                    result *= math.pi
                 else:
                     result = None
                     break
