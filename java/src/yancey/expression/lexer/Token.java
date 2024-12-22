@@ -19,7 +19,6 @@ public class Token {
         DIVIDE,
         POW,
         COMMA,
-        WHITESPACE,
     }
 
     private final TokenType tokenType;

@@ -49,7 +49,6 @@ class TokenType(Enum):
     DIVIDE = 7
     POW = 8
     COMMA = 9
-    WHITESPACE = 10
 
 
 class Token:
@@ -71,40 +70,31 @@ class Lexer:
         string_reader = StringReader(text)
         while string_reader.has_next():
             peek = string_reader.peek()
-            if peek == '+':
-                token_type = TokenType.ADD
+            if peek == ' ':
+                string_reader.skip()
+                continue
+            elif peek == '+':
+                result.append(Token(TokenType.ADD, string_reader.read()))
             elif peek == '-':
-                token_type = TokenType.MINUS
+                result.append(Token(TokenType.MINUS, string_reader.read()))
             elif peek == '*':
-                token_type = TokenType.MULTIPLY
+                result.append(Token(TokenType.MULTIPLY, string_reader.read()))
             elif peek == '/':
-                token_type = TokenType.DIVIDE
+                result.append(Token(TokenType.DIVIDE, string_reader.read()))
             elif peek == '^':
-                token_type = TokenType.POW
+                result.append(Token(TokenType.POW, string_reader.read()))
             elif peek == '(':
-                token_type = TokenType.LEFT_BRACKET
+                result.append(Token(TokenType.LEFT_BRACKET, string_reader.read()))
             elif peek == ')':
-                token_type = TokenType.RIGHT_BRACKET
+                result.append(Token(TokenType.RIGHT_BRACKET, string_reader.read()))
             elif peek == ',':
-                token_type = TokenType.COMMA
-            elif peek == ' ':
-                token_type = TokenType.WHITESPACE
+                result.append(Token(TokenType.COMMA, string_reader.read()))
             elif peek in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.']:
-                token_type = TokenType.NUMBER
+                result.append(Token(TokenType.NUMBER, string_reader.collect(
+                    lambda ch: ch in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'])))
             else:
-                token_type = TokenType.STRING
-            if token_type == TokenType.STRING:
-                token = Token(TokenType.STRING, string_reader.collect(
-                    lambda ch: ch not in ['+', '-', '*', '/', '^', '(', ')', ',', ' ']))
-            elif token_type == TokenType.NUMBER:
-                token = Token(TokenType.NUMBER, string_reader.collect(
-                    lambda ch: ch in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.']))
-            elif token_type == TokenType.WHITESPACE:
-                token = Token(TokenType.WHITESPACE, string_reader.collect(
-                    lambda ch: ch == ' '))
-            else:
-                token = Token(token_type, string_reader.read())
-            result.append(token)
+                result.append(Token(TokenType.STRING, string_reader.collect(
+                    lambda ch: ch not in ['+', '-', '*', '/', '^', '(', ')', ',', ' '])))
         if string_reader.has_next():
             raise 'string not read completed'
         return result
@@ -154,16 +144,20 @@ class VariableNode(BaseNode):
 
 
 class FunctionType(Enum):
-    SIN = 0
-    COS = 1
-    TAN = 2
-    ASIN = 3
-    ACOS = 4
-    ATAN = 5
-    SQRT = 6
-    EXP = 7
-    POW = 8
-    LOG = 9
+    ADD = 0
+    MINUS = 1
+    MULTIPY = 2
+    DIVIDE = 3
+    POW = 4
+    SIN = 5
+    COS = 6
+    TAN = 7
+    ASIN = 8
+    ACOS = 9
+    ATAN = 10
+    SQRT = 11
+    EXP = 12
+    LOG = 13
 
 
 class FunctionNode(BaseNode):
@@ -172,7 +166,17 @@ class FunctionNode(BaseNode):
         self._arguments = arguments
 
     def calculate(self, variables: dict[str, float]) -> float:
-        if self._function_type == FunctionType.SIN:
+        if self._function_type == FunctionType.ADD:
+            return self._arguments[0].calculate(variables) + self._arguments[1].calculate(variables)
+        elif self._function_type == FunctionType.MINUS:
+            return self._arguments[0].calculate(variables) - self._arguments[1].calculate(variables)
+        elif self._function_type == FunctionType.MULTIPY:
+            return self._arguments[0].calculate(variables) * self._arguments[1].calculate(variables)
+        elif self._function_type == FunctionType.DIVIDE:
+            return self._arguments[0].calculate(variables) / self._arguments[1].calculate(variables)
+        elif self._function_type == FunctionType.POW:
+            return self._arguments[0].calculate(variables) ** self._arguments[1].calculate(variables)
+        elif self._function_type == FunctionType.SIN:
             return math.sin(self._arguments[0].calculate(variables))
         elif self._function_type == FunctionType.COS:
             return math.cos(self._arguments[0].calculate(variables))
@@ -188,57 +192,10 @@ class FunctionNode(BaseNode):
             return math.sqrt(self._arguments[0].calculate(variables))
         elif self._function_type == FunctionType.EXP:
             return math.exp(self._arguments[0].calculate(variables))
-        elif self._function_type == FunctionType.POW:
-            return math.pow(self._arguments[0].calculate(variables), self._arguments[1].calculate(variables))
         elif self._function_type == FunctionType.LOG:
             return math.log(self._arguments[0].calculate(variables), self._arguments[1].calculate(variables))
         else:
             raise 'unknown function type'
-
-
-class AddNode(BaseNode):
-    def __init__(self, node1: BaseNode, node2: BaseNode):
-        self._node1 = node1
-        self._node2 = node2
-
-    def calculate(self, variables: dict[str, float]) -> float:
-        return self._node1.calculate(variables) + self._node2.calculate(variables)
-
-
-class MinusNode(BaseNode):
-    def __init__(self, node1: BaseNode, node2: BaseNode):
-        self._node1 = node1
-        self._node2 = node2
-
-    def calculate(self, variables: dict[str, float]) -> float:
-        return self._node1.calculate(variables) - self._node2.calculate(variables)
-
-
-class MultiplyNode(BaseNode):
-    def __init__(self, node1: BaseNode, node2: BaseNode):
-        self._node1 = node1
-        self._node2 = node2
-
-    def calculate(self, variables: dict[str, float]) -> float:
-        return self._node1.calculate(variables) * self._node2.calculate(variables)
-
-
-class DivideNode(BaseNode):
-    def __init__(self, node1: BaseNode, node2: BaseNode):
-        self._node1 = node1
-        self._node2 = node2
-
-    def calculate(self, variables: dict[str, float]) -> float:
-        return self._node1.calculate(variables) / self._node2.calculate(variables)
-
-
-class PowNode(BaseNode):
-    def __init__(self, node1: BaseNode, node2: BaseNode):
-        self._node1 = node1
-        self._node2 = node2
-
-    def calculate(self, variables: dict[str, float]) -> float:
-        return self._node1.calculate(variables) ** self._node2.calculate(variables)
 
 
 class TokenReader:
@@ -255,10 +212,6 @@ class TokenReader:
     def skip(self) -> None:
         if self._index < len(self._tokens):
             self._index += 1
-
-    def skip_white_space(self) -> None:
-        while self.has_next() and self.peek().get_token_type() == TokenType.WHITESPACE:
-            self.skip()
 
     def read(self) -> Token:
         peek = self.peek()
@@ -280,29 +233,25 @@ class Parser:
 
     def parse_expression(self) -> BaseNode:
         result = self.parse_term()
-        self._token_reader.skip_white_space()
         while self._token_reader.has_next():
             token_type = self._token_reader.peek().get_token_type()
             if token_type == TokenType.ADD:
                 self._token_reader.skip()
-                result = AddNode(result, self.parse_term())
+                result = FunctionNode(FunctionType.ADD, [result, self.parse_term()])
             elif token_type == TokenType.MINUS:
                 self._token_reader.skip()
-                result = MinusNode(result, self.parse_term())
+                result = FunctionNode(FunctionType.MINUS, [result, self.parse_term()])
             else:
                 break
-            self._token_reader.skip_white_space()
         return result
 
     def parse_factor(self) -> BaseNode:
-        self._token_reader.skip_white_space()
         if not self._token_reader.has_next():
             raise 'token reader end'
         token_type = self._token_reader.peek().get_token_type()
         if token_type == TokenType.LEFT_BRACKET:
             self._token_reader.skip()
             result = self.parse_expression()
-            self._token_reader.skip_white_space()
             if not self._token_reader.has_next():
                 raise 'token reader end'
             if self._token_reader.peek().get_token_type() != TokenType.RIGHT_BRACKET:
@@ -340,44 +289,38 @@ class Parser:
             return self.parse_factor()
         elif token_type == TokenType.MINUS:
             self._token_reader.skip()
-            return MultiplyNode(NumberNode(-1), self.parse_factor())
+            return FunctionNode(FunctionType.MULTIPY, [NumberNode(-1), self.parse_factor()])
         else:
             raise 'error token type'
 
     def parse_term(self) -> BaseNode:
         result = self.parse_power()
-        self._token_reader.skip_white_space()
         while self._token_reader.has_next():
             token_type = self._token_reader.peek().get_token_type()
             if token_type == TokenType.MULTIPLY:
                 self._token_reader.skip()
-                result = MultiplyNode(result, self.parse_power())
+                result = FunctionNode(FunctionType.MULTIPY, [result, self.parse_power()])
             elif token_type == TokenType.DIVIDE:
                 self._token_reader.skip()
-                result = DivideNode(result, self.parse_power())
+                result = FunctionNode(FunctionType.DIVIDE, [result, self.parse_power()])
             elif token_type in [TokenType.LEFT_BRACKET, TokenType.STRING, TokenType.NUMBER]:
-                result = MultiplyNode(result, self.parse_power())
+                result = FunctionNode(FunctionType.MULTIPY, [result, self.parse_power()])
             else:
                 break
-            self._token_reader.skip_white_space()
         return result
 
     def parse_power(self) -> BaseNode:
-        self._token_reader.skip_white_space()
         if not self._token_reader.has_next():
             raise 'token reader end'
         result = self.parse_factor()
-        self._token_reader.skip_white_space()
         while self._token_reader.has_next():
             if self._token_reader.peek().get_token_type() != TokenType.POW:
                 break
             self._token_reader.skip()
-            result = PowNode(result, self.parse_factor())
-            self._token_reader.skip_white_space()
+            result = FunctionNode(FunctionType.POW, [result, self.parse_factor()])
         return result
 
     def parse_arguments(self, n_arguments: int) -> list[BaseNode]:
-        self._token_reader.skip_white_space()
         if not self._token_reader.has_next():
             raise 'token reader end'
         if self._token_reader.peek().get_token_type() != TokenType.LEFT_BRACKET:
@@ -386,15 +329,13 @@ class Parser:
         nodes = []
         if n_arguments > 0:
             nodes.append(self.parse_expression())
-        for i in range(1, n_arguments):
-            self._token_reader.skip_white_space()
-            if not self._token_reader.has_next():
-                raise 'token reader end'
-            if self._token_reader.peek().get_token_type() != TokenType.COMMA:
-                raise 'require comma'
-            self._token_reader.skip()
-            nodes.append(self.parse_expression())
-        self._token_reader.skip_white_space()
+            for _ in range(1, n_arguments):
+                if not self._token_reader.has_next():
+                    raise 'token reader end'
+                if self._token_reader.peek().get_token_type() != TokenType.COMMA:
+                    raise 'require comma'
+                self._token_reader.skip()
+                nodes.append(self.parse_expression())
         if not self._token_reader.has_next():
             raise 'token reader end'
         if self._token_reader.peek().get_token_type() != TokenType.RIGHT_BRACKET:

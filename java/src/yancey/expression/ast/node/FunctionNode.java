@@ -12,6 +12,11 @@ import java.util.Map;
 public class FunctionNode extends BaseNode {
 
     public enum Type {
+        ADD,
+        MINUS,
+        MULTIPY,
+        DIVIDE,
+        POW,
         SIN,
         COS,
         TAN,
@@ -20,7 +25,6 @@ public class FunctionNode extends BaseNode {
         ATAN,
         SQRT,
         EXP,
-        POW,
         LOG,
     }
 
@@ -35,6 +39,11 @@ public class FunctionNode extends BaseNode {
     @Override
     public double calculate(Map<String, Double> variables) {
         return switch (type) {
+            case ADD -> arguments.get(0).calculate(variables) + arguments.get(1).calculate(variables);
+            case MINUS -> arguments.get(0).calculate(variables) - arguments.get(1).calculate(variables);
+            case MULTIPY -> arguments.get(0).calculate(variables) * arguments.get(1).calculate(variables);
+            case DIVIDE -> arguments.get(0).calculate(variables) / arguments.get(1).calculate(variables);
+            case POW -> Math.pow(arguments.get(0).calculate(variables), arguments.get(1).calculate(variables));
             case SIN -> Math.sin(arguments.get(0).calculate(variables));
             case COS -> Math.cos(arguments.get(0).calculate(variables));
             case TAN -> Math.tan(arguments.get(0).calculate(variables));
@@ -43,10 +52,6 @@ public class FunctionNode extends BaseNode {
             case ATAN -> Math.atan(arguments.get(0).calculate(variables));
             case SQRT -> Math.sqrt(arguments.get(0).calculate(variables));
             case EXP -> Math.exp(arguments.get(0).calculate(variables));
-            case POW -> Math.pow(
-                    arguments.get(0).calculate(variables),
-                    arguments.get(1).calculate(variables)
-            );
             case LOG -> Math.log(arguments.get(0).calculate(variables)) /
                     Math.log(arguments.get(1).calculate(variables));
         };

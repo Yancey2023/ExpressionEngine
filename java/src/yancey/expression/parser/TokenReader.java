@@ -35,12 +35,6 @@ public class TokenReader {
         }
     }
 
-    public void skipWhitespace() {
-        while (hasNext() && peek().getTokenType() == Token.TokenType.WHITESPACE) {
-            skip();
-        }
-    }
-
     public Token read() {
         Token peek = peek();
         skip();

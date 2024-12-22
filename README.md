@@ -24,9 +24,9 @@ import java.util.Map;
 public class Main {
 
     public static void main(String[] args) {
-        String expression = "1/2*(b)^2+3*b-4";
+        String formula = "1/2*(b)^2+3*b-4";
         Map<String, Double> variables = Map.of("a", 8.0, "b", 11.0);
-        double result = new Expression(expression).calculate(variables);
+        double result = new Expression(formula).calculate(variables);
     }
 
 }

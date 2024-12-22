@@ -6,7 +6,10 @@
  */
 package yancey.expression.parser;
 
-import yancey.expression.ast.node.*;
+import yancey.expression.ast.node.BaseNode;
+import yancey.expression.ast.node.FunctionNode;
+import yancey.expression.ast.node.NumberNode;
+import yancey.expression.ast.node.VariableNode;
 import yancey.expression.lexer.Token;
 
 import java.util.ArrayList;
@@ -20,7 +23,7 @@ public class Parser {
         this.tokenReader = tokenReader;
     }
 
-    public static BaseNode parse(List<Token> tokens){
+    public static BaseNode parse(List<Token> tokens) {
         TokenReader tokenReader = new TokenReader(tokens);
         BaseNode result = new Parser(tokenReader).parseExpression();
         if (tokenReader.hasNext()) {
@@ -31,25 +34,22 @@ public class Parser {
 
     private BaseNode parseExpression() {
         BaseNode result = parseTerm();
-        tokenReader.skipWhitespace();
         while (tokenReader.hasNext()) {
             Token.TokenType tokenType = tokenReader.peek().getTokenType();
             if (tokenType == Token.TokenType.ADD) {
                 tokenReader.skip();
-                result = new AddNode(result, parseTerm());
+                result = new FunctionNode(FunctionNode.Type.ADD, List.of(result, parseTerm()));
             } else if (tokenType == Token.TokenType.MINUS) {
                 tokenReader.skip();
-                result = new MinusNode(result, parseTerm());
+                result = new FunctionNode(FunctionNode.Type.MINUS, List.of(result, parseTerm()));
             } else {
                 break;
             }
-            tokenReader.skipWhitespace();
         }
         return result;
     }
 
     private BaseNode parseFactor() {
-        tokenReader.skipWhitespace();
         if (!tokenReader.hasNext()) {
             throw new RuntimeException("token reader end");
         }
@@ -57,7 +57,6 @@ public class Parser {
             case LEFT_BRACKET -> {
                 tokenReader.skip();
                 BaseNode result = parseExpression();
-                tokenReader.skipWhitespace();
                 if (!tokenReader.hasNext()) {
                     throw new RuntimeException("token reader end");
                 }
@@ -92,7 +91,7 @@ public class Parser {
             }
             case MINUS -> {
                 tokenReader.skip();
-                return new MultiplyNode(new NumberNode(-1), parseFactor());
+                return new FunctionNode(FunctionNode.Type.MULTIPY, List.of(new NumberNode(-1), parseFactor()));
             }
             default -> throw new RuntimeException("error token type");
         }
@@ -100,48 +99,43 @@ public class Parser {
 
     private BaseNode parseTerm() {
         BaseNode result = parsePower();
-        tokenReader.skipWhitespace();
         outer:
         while (tokenReader.hasNext()) {
             switch (tokenReader.peek().getTokenType()) {
                 case MULTIPLY -> {
                     tokenReader.skip();
-                    result = new MultiplyNode(result, parsePower());
+                    result = new FunctionNode(FunctionNode.Type.MULTIPY, List.of(result, parsePower()));
                 }
                 case DIVIDE -> {
                     tokenReader.skip();
-                    result = new DivideNode(result, parsePower());
+                    result = new FunctionNode(FunctionNode.Type.DIVIDE, List.of(result, parsePower()));
                 }
-                case LEFT_BRACKET, STRING, NUMBER -> result = new MultiplyNode(result, parsePower());
+                case LEFT_BRACKET, STRING, NUMBER ->
+                        result = new FunctionNode(FunctionNode.Type.MULTIPY, List.of(result, parsePower()));
                 default -> {
                     break outer;
                 }
             }
-            tokenReader.skipWhitespace();
         }
         return result;
     }
 
     private BaseNode parsePower() {
-        tokenReader.skipWhitespace();
         if (!tokenReader.hasNext()) {
             throw new RuntimeException("token reader end");
         }
         BaseNode result = parseFactor();
-        tokenReader.skipWhitespace();
         while (tokenReader.hasNext()) {
             if (tokenReader.peek().getTokenType() != Token.TokenType.POW) {
                 break;
             }
             tokenReader.skip();
-            result = new PowNode(result, parseFactor());
-            tokenReader.skipWhitespace();
+            result = new FunctionNode(FunctionNode.Type.POW, List.of(result, parseFactor()));
         }
         return result;
     }
 
     private List<BaseNode> parseArguments(int nArguments) {
-        tokenReader.skipWhitespace();
         if (!tokenReader.hasNext()) {
             throw new RuntimeException("token reader end");
         }
@@ -154,7 +148,6 @@ public class Parser {
             nodes.add(parseExpression());
         }
         for (int i = 1; i < nArguments; i++) {
-            tokenReader.skipWhitespace();
             if (!tokenReader.hasNext()) {
                 throw new RuntimeException("token reader end");
             }
@@ -164,7 +157,6 @@ public class Parser {
             tokenReader.skip();
             nodes.add(parseExpression());
         }
-        tokenReader.skipWhitespace();
         if (!tokenReader.hasNext()) {
             throw new RuntimeException("token reader end");
         }
