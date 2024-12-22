@@ -4,7 +4,7 @@ A simple expression engine.
 
 ## Example
 
-**Python:** (require python 3.10 or later)
+**Python:** (require Python 3.10 or later)
 
 ```python
 from expression import Expression
