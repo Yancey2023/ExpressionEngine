@@ -4,7 +4,7 @@ A simple expression engine.
 
 ## Example
 
-**Python:**
+**Python:** (require python 3.10 or later)
 
 ```python
 from expression import Expression
@@ -14,7 +14,7 @@ variables = {"a": 8.0, "b": 11.0}
 result = Expression(formula).calculate(variables)
 ```
 
-**Java:**
+**Java:** (require Java 17 or later)
 
 ```java
 import yancey.expression.ast.Expression;
