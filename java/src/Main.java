@@ -11,12 +11,12 @@ import java.util.Map;
 
 public class Main {
 
-    private static void test(String expression, Map<String, Double> variables, double result) {
-        double calculateResult = new Expression(expression).calculate(variables);
-        if (calculateResult != result) {
-            System.err.println("test failed: " + expression + " = " + calculateResult + " != " + result);
+    private static void test(String formula, Map<String, Double> variables, double answer) {
+        double calculateResult = new Expression(formula).calculate(variables);
+        if (calculateResult != answer) {
+            System.err.println("test failed: " + formula + " = " + calculateResult + " != " + answer);
         } else {
-            System.out.println("test successful: " + expression + " == " + result);
+            System.out.println("test successful: " + formula + " == " + answer);
         }
     }
 
