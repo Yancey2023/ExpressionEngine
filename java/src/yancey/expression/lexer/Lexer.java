@@ -21,6 +21,7 @@ public class Lexer {
         while (stringReader.hasNext()) {
             char peek = stringReader.peek();
             if (peek == ' ') {
+                stringReader.skip();
                 continue;
             }
             result.add(switch (peek) {
