@@ -36,7 +36,7 @@ public class Parser {
     private BaseNode parseExpression() {
         BaseNode result = parseTerm();
         while (tokenReader.hasNext()) {
-            Token.TokenType tokenType = tokenReader.peek().getTokenType();
+            Token.TokenType tokenType = tokenReader.peek().tokenType();
             if (tokenType == Token.TokenType.ADD) {
                 tokenReader.skip();
                 result = new FunctionNode(FunctionNode.Type.ADD, List.of(result, parseTerm()));
@@ -54,24 +54,24 @@ public class Parser {
         if (!tokenReader.hasNext()) {
             throw new RuntimeException("token reader end");
         }
-        switch (tokenReader.peek().getTokenType()) {
+        switch (tokenReader.peek().tokenType()) {
             case LEFT_BRACKET -> {
                 tokenReader.skip();
                 BaseNode result = parseExpression();
                 if (!tokenReader.hasNext()) {
                     throw new RuntimeException("token reader end");
                 }
-                if (tokenReader.peek().getTokenType() != Token.TokenType.RIGHT_BRACKET) {
+                if (tokenReader.peek().tokenType() != Token.TokenType.RIGHT_BRACKET) {
                     throw new RuntimeException("no right bracket");
                 }
                 tokenReader.skip();
                 return result;
             }
             case NUMBER -> {
-                return new NumberNode(Double.parseDouble(tokenReader.read().getString()));
+                return new NumberNode(Double.parseDouble(tokenReader.read().string()));
             }
             case STRING -> {
-                String string = tokenReader.read().getString();
+                String string = tokenReader.read().string();
                 return switch (string) {
                     case "sin" -> new FunctionNode(FunctionNode.Type.SIN, parseArguments(1));
                     case "cos" -> new FunctionNode(FunctionNode.Type.COS, parseArguments(1));
@@ -102,7 +102,7 @@ public class Parser {
         BaseNode result = parsePower();
         outer:
         while (tokenReader.hasNext()) {
-            switch (tokenReader.peek().getTokenType()) {
+            switch (tokenReader.peek().tokenType()) {
                 case MULTIPLY -> {
                     tokenReader.skip();
                     result = new FunctionNode(FunctionNode.Type.MULTIPY, List.of(result, parsePower()));
@@ -127,7 +127,7 @@ public class Parser {
         }
         BaseNode result = parseFactor();
         while (tokenReader.hasNext()) {
-            if (tokenReader.peek().getTokenType() != Token.TokenType.POW) {
+            if (tokenReader.peek().tokenType() != Token.TokenType.POW) {
                 break;
             }
             tokenReader.skip();
@@ -140,7 +140,7 @@ public class Parser {
         if (!tokenReader.hasNext()) {
             throw new RuntimeException("token reader end");
         }
-        if (tokenReader.peek().getTokenType() != Token.TokenType.LEFT_BRACKET) {
+        if (tokenReader.peek().tokenType() != Token.TokenType.LEFT_BRACKET) {
             throw new RuntimeException("require left bracket");
         }
         tokenReader.skip();
@@ -152,7 +152,7 @@ public class Parser {
             if (!tokenReader.hasNext()) {
                 throw new RuntimeException("token reader end");
             }
-            if (tokenReader.peek().getTokenType() != Token.TokenType.COMMA) {
+            if (tokenReader.peek().tokenType() != Token.TokenType.COMMA) {
                 throw new RuntimeException("require comma");
             }
             tokenReader.skip();
@@ -161,7 +161,7 @@ public class Parser {
         if (!tokenReader.hasNext()) {
             throw new RuntimeException("token reader end");
         }
-        if (tokenReader.peek().getTokenType() != Token.TokenType.RIGHT_BRACKET) {
+        if (tokenReader.peek().tokenType() != Token.TokenType.RIGHT_BRACKET) {
             throw new RuntimeException("require right bracket");
         }
         tokenReader.skip();

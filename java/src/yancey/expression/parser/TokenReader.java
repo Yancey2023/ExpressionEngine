@@ -10,7 +10,6 @@ package yancey.expression.parser;
 import yancey.expression.lexer.Token;
 
 import java.util.List;
-import java.util.Stack;
 
 public class TokenReader {
 

@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class Expression {
 
-    public BaseNode root;
+    private final BaseNode root;
 
     public Expression(String string) {
         this.root = Parser.parse(Lexer.lex(string));

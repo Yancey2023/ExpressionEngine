@@ -7,7 +7,7 @@
 
 package yancey.expression.lexer;
 
-public class Token {
+public record Token(TokenType tokenType, String string) {
 
     public enum TokenType {
         STRING,
@@ -22,19 +22,4 @@ public class Token {
         COMMA,
     }
 
-    private final TokenType tokenType;
-    private final String string;
-
-    public Token(TokenType tokenType, String string) {
-        this.tokenType = tokenType;
-        this.string = string;
-    }
-
-    public TokenType getTokenType() {
-        return tokenType;
-    }
-
-    public String getString() {
-        return string;
-    }
 }
